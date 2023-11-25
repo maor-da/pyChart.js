@@ -2,6 +2,7 @@ import inspect
 import json
 from pychartjs.utils import ChartUtils, ChartType, FunctionsNotAllowedError
 from pychartjs.Opt import General
+import re
 
 class BaseChart:
 
@@ -85,6 +86,15 @@ class BaseChart:
         return {'plugins': content}
 
 
+    def getPlugins(self):
+        cleanPlugins = ChartUtils.cleanClass(self.plugins, General)
+
+        for k in cleanPlugins:
+            cleanPlugins[k]=re.sub(' +', ' ', cleanPlugins[k]).replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+
+        return {'plugins': [dict([(k,cleanPlugins[k])]) for k in cleanPlugins]}
+
+
     def get(self):
 
         datastructure = {}
@@ -92,10 +102,12 @@ class BaseChart:
         datastructure.update(self.getDatasets())
 
         options = self.getOptions()
+        plugins = self.getPlugins()
 
         build = {'type': self.type}
         build.update({'data': datastructure})
         build.update(options)
+        build.update(plugins)
 
         js = json.dumps(build)
         js = js.replace('"<<', '').replace('>>"', '')

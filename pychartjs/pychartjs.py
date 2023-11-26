@@ -20,6 +20,9 @@ class BaseChart:
     class pluginOptions:
         pass
 
+    class plugins:
+        pass
+
 
     def getLabels(self):
         cleanLabels = ChartUtils.cleanClass(self.labels, list)
